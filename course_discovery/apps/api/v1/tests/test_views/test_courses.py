@@ -54,6 +54,7 @@ class CourseViewSetTests(SerializationMixin, ElasticsearchTestMixin, OAuth2Mixin
         self.audit_type = CourseType.objects.get(slug=CourseType.AUDIT)
         self.verified_type = CourseType.objects.get(slug=CourseType.VERIFIED_AUDIT)
         self.product_source = SourceFactory(name='test source')
+        self.product_source_2 = SourceFactory(slug=settings.DEFAULT_EXTERNAL_PRODUCT_SOURCE_SLUG)
         self.course = CourseFactory(
             partner=self.partner, title='Fake Test', key='edX+Fake101', type=self.audit_type, geolocation=None
         )
@@ -1110,6 +1111,31 @@ class CourseViewSetTests(SerializationMixin, ElasticsearchTestMixin, OAuth2Mixin
         assert course.active_url_slug == 'learn/physics/harvardx-applied-physics'
         assert course.organization_logo_override.url is not None
         self.assertDictEqual(response.data, self.serialize_course(course))
+
+    @ddt.data('put', 'patch')
+    def test_update_success_with_subdirectory_slug_format_for_exec_ed_course(self, method):
+        url = reverse('api:v1:course-detail', kwargs={'key': self.course.uuid})
+
+        external_product_source = Source.objects.get(slug=settings.DEFAULT_EXTERNAL_PRODUCT_SOURCE_SLUG)
+        course_type = CourseTypeFactory(slug=CourseType.EXECUTIVE_EDUCATION_2U)
+        self.course.product_source = external_product_source
+        self.course.type = course_type
+        self.course.save()
+        
+        self.course_data.update({
+            'url_slug': 'executive-education/harvardx-applied-physics',
+        })
+
+        with override_waffle_switch(IS_SUBDIRECTORY_SLUG_FORMAT_ENABLED, active=True):
+            response = getattr(self.client, method)(url, self.course_data, format='json')
+            assert response.status_code == 200
+
+        course = Course.everything.get(uuid=self.course.uuid, draft=True)
+        assert course.title == 'Course title'
+        assert course.active_url_slug == 'executive-education/harvardx-applied-physics'
+        assert course.organization_logo_override.url is not None
+        self.assertDictEqual(response.data, self.serialize_course(course))
+    
 
     @responses.activate
     def test_remove_video_from_course(self):

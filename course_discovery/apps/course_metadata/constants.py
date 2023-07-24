@@ -1,5 +1,7 @@
 from enum import Enum
 
+from django.conf import settings
+
 COURSE_ID_REGEX = r'[^/+]+(/|\+)[^/+]+'
 COURSE_RUN_ID_REGEX = r'[^/+]+(/|\+)[^/+]+(/|\+)[^/]+'
 COURSE_SKILLS_URL_NAME = 'course_skills'
@@ -8,6 +10,7 @@ REFRESH_PROGRAM_SKILLS_URL_NAME = 'refresh_program_skills'
 COURSE_UUID_REGEX = r'[0-9a-f-]+'
 SUBDIRECTORY_SLUG_FORMAT_REGEX = r'learn\/[a-zA-Z0-9-_]+\/[a-zA-Z0-9-_]+$'
 SLUG_FORMAT_REGEX = r'[a-zA-Z0-9-_]+$'
+EXEC_ED_SLUG_FORMAT_REGEX = r'^executive-education/[a-zA-Z0-9-_]+$'
 
 MASTERS_PROGRAM_TYPE_SLUG = 'masters'
 
@@ -30,7 +33,21 @@ DRIVE_LINK_PATTERNS = [r"https://docs\.google\.com/uc\?id=\w+",
 
 GOOGLE_CLIENT_API_SCOPE = ['https://www.googleapis.com/auth/drive.readonly']
 
+COURSE_URL_SLUGS_PATTERN = {
+    settings.DEFAULT_PRODUCT_SOURCE_SLUG: {'default': SLUG_FORMAT_REGEX + '|' + SUBDIRECTORY_SLUG_FORMAT_REGEX},
+    settings.DEFAULT_EXTERNAL_PRODUCT_SOURCE_SLUG: {'default': SLUG_FORMAT_REGEX, 'executive-education-2u': SLUG_FORMAT_REGEX + '|' + EXEC_ED_SLUG_FORMAT_REGEX},
+    'any': {'default': SLUG_FORMAT_REGEX}
+}
 
+COURSE_URL_SLUGS_PATTERN_ERROR_MESSAGES = {
+    SLUG_FORMAT_REGEX : 'Enter a valid “slug” consisting of letters, numbers, underscores or hyphens.',
+    SLUG_FORMAT_REGEX + '|' + SUBDIRECTORY_SLUG_FORMAT_REGEX:
+        'Course edit was unsuccessful. The course URL slug "[{url_slug}]" is an invalid format. ' \
+        'Please ensure that the slug is in the format `learn/<primary_subject>/<organization_name>-<course_title>`',
+    SLUG_FORMAT_REGEX + '|' + EXEC_ED_SLUG_FORMAT_REGEX:
+        'Course edit was unsuccessful. The course URL slug "[{url_slug}]"' \
+        'is an invalid format. Please ensure that the slug is in the format `executive-education/<course_title>`',
+}
 class PathwayType(Enum):
     """ Allowed values for Pathway.pathway_type """
     CREDIT = 'credit'

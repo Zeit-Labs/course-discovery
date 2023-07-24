@@ -13,7 +13,7 @@ import requests
 from bs4 import BeautifulSoup
 from cairosvg import svg2png
 from django.conf import settings
-from django.core import validators
+from django.core.exceptions import ValidationError
 from django.core.files.base import ContentFile
 from django.db import models, transaction
 from django.utils.functional import cached_property
@@ -26,7 +26,8 @@ from stdimage.models import StdImageFieldFile
 from course_discovery.apps.core.models import SalesforceConfiguration
 from course_discovery.apps.core.utils import serialize_datetime
 from course_discovery.apps.course_metadata.constants import (
-    HTML_TAGS_ATTRIBUTE_WHITELIST, IMAGE_TYPES, SLUG_FORMAT_REGEX, SUBDIRECTORY_SLUG_FORMAT_REGEX
+    COURSE_URL_SLUGS_PATTERN, COURSE_URL_SLUGS_PATTERN_ERROR_MESSAGES, HTML_TAGS_ATTRIBUTE_WHITELIST, IMAGE_TYPES,
+    SLUG_FORMAT_REGEX, SUBDIRECTORY_SLUG_FORMAT_REGEX
 )
 from course_discovery.apps.course_metadata.exceptions import (
     EcommerceSiteAPIClientException, MarketingSiteAPIClientException
@@ -1048,29 +1049,17 @@ def validate_slug_format(url_slug, course):
         course: course object
 
     Returns:
-        valid_slug_flag: None if url_slug is valid else raise ValidationError
+        none if url_slug is valid else throws ValidationError
     """
-    from course_discovery.apps.course_metadata.models import CourseRun  # pylint: disable=import-outside-toplevel
+    slug_pattern = None
 
-    valid_slug_flag = False
-
-    if (course.product_source.slug == settings.DEFAULT_PRODUCT_SOURCE_SLUG and
-            IS_SUBDIRECTORY_SLUG_FORMAT_ENABLED.is_enabled()):
-        if set(course.course_run_statuses).intersection(set(CourseRun.IN_REVIEW_STATUS + CourseRun.POST_REVIEW_STATUS)):
-            # TODO: remove the or condition once all the OCM courses are migrated to subdirectory slug format
-            valid_slug_flag = is_valid_slug_format(url_slug) or validators.validate_slug(url_slug)
-            valid_slug_flag = True
-
-        else:
-            valid_slug_flag = is_valid_slug_format(url_slug) or validators.validate_slug(url_slug)
-            valid_slug_flag = True
-    else:
-        validators.validate_slug(url_slug)
-        valid_slug_flag = True
-
-    if not valid_slug_flag:
-        # pylint: disable=line-too-long
-        raise Exception(  # pylint: disable=broad-exception-raised
-            (f'Course edit was unsuccessful. The course URL slug ‘[{url_slug}]’ is an invalid format. '
-                'Please ensure that the slug is in the format ‘learn/<primary_subject>/<organization_name>-<course_title>’ ')
+    if IS_SUBDIRECTORY_SLUG_FORMAT_ENABLED.is_enabled():
+        product_source = course.product_source.slug if course.product_source else None
+        slug_pattern = COURSE_URL_SLUGS_PATTERN.get(product_source, COURSE_URL_SLUGS_PATTERN['any']).get(course.type.slug,
+            COURSE_URL_SLUGS_PATTERN.get(product_source, {}).get('default', COURSE_URL_SLUGS_PATTERN['any']['default'])
         )
+    else:
+        slug_pattern = COURSE_URL_SLUGS_PATTERN.get('any').get('default')
+
+    if not re.match(slug_pattern, url_slug):
+        raise ValidationError(COURSE_URL_SLUGS_PATTERN_ERROR_MESSAGES[slug_pattern].format(url_slug=url_slug))
