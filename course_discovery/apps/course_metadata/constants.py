@@ -36,7 +36,7 @@ GOOGLE_CLIENT_API_SCOPE = ['https://www.googleapis.com/auth/drive.readonly']
 COURSE_URL_SLUGS_PATTERN = {
     settings.DEFAULT_PRODUCT_SOURCE_SLUG:
         {'default': f'{SLUG_FORMAT_REGEX}|{SUBDIRECTORY_SLUG_FORMAT_REGEX}'},
-    settings.DEFAULT_EXTERNAL_PRODUCT_SOURCE_SLUG:
+    settings.EXTERNAL_PRODUCT_SOURCE_SLUG:
         {'default': SLUG_FORMAT_REGEX, 'executive-education-2u': f'{SLUG_FORMAT_REGEX}|{EXEC_ED_SLUG_FORMAT_REGEX}'},
 }
 

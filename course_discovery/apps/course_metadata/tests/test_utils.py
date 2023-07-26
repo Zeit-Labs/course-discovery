@@ -1140,7 +1140,7 @@ class ValidateSlugFormatTest(TestCase):
     """
     def setUp(self):
         self.product_source = SourceFactory(slug=settings.DEFAULT_PRODUCT_SOURCE_SLUG)
-        self.external_product_source = SourceFactory(slug=settings.DEFAULT_EXTERNAL_PRODUCT_SOURCE_SLUG)
+        self.external_product_source = SourceFactory(slug=settings.EXTERNAL_PRODUCT_SOURCE_SLUG)
         self.course_type = CourseTypeFactory(slug=CourseType.EXECUTIVE_EDUCATION_2U)
         self.test_course_1 = CourseFactory(title='test-title', product_source=self.product_source)
         self.test_course_2 = CourseFactory(title='test-title-2')
