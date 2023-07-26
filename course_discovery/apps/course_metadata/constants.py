@@ -34,20 +34,23 @@ DRIVE_LINK_PATTERNS = [r"https://docs\.google\.com/uc\?id=\w+",
 GOOGLE_CLIENT_API_SCOPE = ['https://www.googleapis.com/auth/drive.readonly']
 
 COURSE_URL_SLUGS_PATTERN = {
-    settings.DEFAULT_PRODUCT_SOURCE_SLUG: {'default': SLUG_FORMAT_REGEX + '|' + SUBDIRECTORY_SLUG_FORMAT_REGEX},
-    settings.DEFAULT_EXTERNAL_PRODUCT_SOURCE_SLUG: {'default': SLUG_FORMAT_REGEX, 'executive-education-2u': SLUG_FORMAT_REGEX + '|' + EXEC_ED_SLUG_FORMAT_REGEX},
-    'any': {'default': SLUG_FORMAT_REGEX}
+    settings.DEFAULT_PRODUCT_SOURCE_SLUG:
+        {'default': f'{SLUG_FORMAT_REGEX}|{SUBDIRECTORY_SLUG_FORMAT_REGEX}'},
+    settings.DEFAULT_EXTERNAL_PRODUCT_SOURCE_SLUG:
+        {'default': SLUG_FORMAT_REGEX, 'executive-education-2u': f'{SLUG_FORMAT_REGEX}|{EXEC_ED_SLUG_FORMAT_REGEX}'},
 }
 
 COURSE_URL_SLUGS_PATTERN_ERROR_MESSAGES = {
     SLUG_FORMAT_REGEX : 'Enter a valid “slug” consisting of letters, numbers, underscores or hyphens.',
-    SLUG_FORMAT_REGEX + '|' + SUBDIRECTORY_SLUG_FORMAT_REGEX:
+    f'{SLUG_FORMAT_REGEX}|{SUBDIRECTORY_SLUG_FORMAT_REGEX}':
         'Course edit was unsuccessful. The course URL slug "[{url_slug}]" is an invalid format. ' \
         'Please ensure that the slug is in the format `learn/<primary_subject>/<organization_name>-<course_title>`',
-    SLUG_FORMAT_REGEX + '|' + EXEC_ED_SLUG_FORMAT_REGEX:
+    f'{SLUG_FORMAT_REGEX}|{EXEC_ED_SLUG_FORMAT_REGEX}':
         'Course edit was unsuccessful. The course URL slug "[{url_slug}]"' \
         'is an invalid format. Please ensure that the slug is in the format `executive-education/<course_title>`',
 }
+
+
 class PathwayType(Enum):
     """ Allowed values for Pathway.pathway_type """
     CREDIT = 'credit'

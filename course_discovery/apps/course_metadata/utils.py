@@ -1041,7 +1041,7 @@ def is_valid_uuid(val):
 
 def validate_slug_format(url_slug, course):
     """
-    Given a url_slug and subdirectory_slug_flag it will check if url_slug is valid or not based on
+    Given a url_slug and course it will check if url_slug is valid or not based on
     subdirectory_slug_flag and course_run_statuses
 
     Args:
@@ -1055,11 +1055,12 @@ def validate_slug_format(url_slug, course):
 
     if IS_SUBDIRECTORY_SLUG_FORMAT_ENABLED.is_enabled():
         product_source = course.product_source.slug if course.product_source else None
-        slug_pattern = COURSE_URL_SLUGS_PATTERN.get(product_source, COURSE_URL_SLUGS_PATTERN['any']).get(course.type.slug,
-            COURSE_URL_SLUGS_PATTERN.get(product_source, {}).get('default', COURSE_URL_SLUGS_PATTERN['any']['default'])
+        slug_pattern = COURSE_URL_SLUGS_PATTERN.get(product_source, {}).get(
+            course.type.slug,
+            COURSE_URL_SLUGS_PATTERN.get(product_source, {}).get('default', SLUG_FORMAT_REGEX)
         )
     else:
-        slug_pattern = COURSE_URL_SLUGS_PATTERN.get('any').get('default')
+        slug_pattern = SLUG_FORMAT_REGEX
 
     if not re.match(slug_pattern, url_slug):
         raise ValidationError(COURSE_URL_SLUGS_PATTERN_ERROR_MESSAGES[slug_pattern].format(url_slug=url_slug))
