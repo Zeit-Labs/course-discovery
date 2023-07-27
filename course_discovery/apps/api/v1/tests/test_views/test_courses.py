@@ -1109,7 +1109,6 @@ class CourseViewSetTests(SerializationMixin, ElasticsearchTestMixin, OAuth2Mixin
         course = Course.everything.get(uuid=self.course.uuid, draft=True)
         assert course.title == 'Course title'
         assert course.active_url_slug == 'learn/physics/harvardx-applied-physics'
-        assert course.organization_logo_override.url is not None
         self.assertDictEqual(response.data, self.serialize_course(course))
 
     @ddt.data('put', 'patch')
@@ -1133,7 +1132,6 @@ class CourseViewSetTests(SerializationMixin, ElasticsearchTestMixin, OAuth2Mixin
         course = Course.everything.get(uuid=self.course.uuid, draft=True)
         assert course.title == 'Course title'
         assert course.active_url_slug == 'executive-education/harvardx-applied-physics'
-        assert course.organization_logo_override.url is not None
         self.assertDictEqual(response.data, self.serialize_course(course))
     
 

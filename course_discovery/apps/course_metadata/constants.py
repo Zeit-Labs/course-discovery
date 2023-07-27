@@ -42,19 +42,19 @@ GOOGLE_CLIENT_API_SCOPE = ['https://www.googleapis.com/auth/drive.readonly']
 
 COURSE_URL_SLUGS_PATTERN = {
     settings.DEFAULT_PRODUCT_SOURCE_SLUG:
-        {'default': (
-            f'{SLUG_FORMAT_REGEX}|{SUBDIRECTORY_SLUG_FORMAT_REGEX}',
-            SUBDIRECTORY_SLUG_FORMAT_ERROR_MSG
-        )},
+        {'default': {
+            'slug_format': f'{SLUG_FORMAT_REGEX}|{SUBDIRECTORY_SLUG_FORMAT_REGEX}',
+            'error_msg': SUBDIRECTORY_SLUG_FORMAT_ERROR_MSG
+        }},
     settings.EXTERNAL_PRODUCT_SOURCE_SLUG:
-        {'default': (
-            SLUG_FORMAT_REGEX,
-            SIMPLE_SLUG_FORMAT_ERROR_MSG
-        ),
-        'executive-education-2u': (
-            f'{SLUG_FORMAT_REGEX}|{EXEC_ED_SLUG_FORMAT_REGEX}',
-            EXEC_ED_SLUG_FORMAT_ERROR_MSG
-        )}
+        {'default': {
+            'slug_format': SLUG_FORMAT_REGEX,
+            'error_msg': SIMPLE_SLUG_FORMAT_ERROR_MSG
+        },
+        'executive-education-2u': {
+            'slug_format': f'{SLUG_FORMAT_REGEX}|{EXEC_ED_SLUG_FORMAT_REGEX}',
+            'error_msg': EXEC_ED_SLUG_FORMAT_ERROR_MSG
+        }}
 }
 
 

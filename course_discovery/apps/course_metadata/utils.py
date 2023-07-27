@@ -1052,17 +1052,20 @@ def validate_slug_format(url_slug, course):
         none if url_slug is valid else throws ValidationError
     """
     slug_pattern = None
+    DEFAULT_SLUG_PATTERN = {
+        'slug_format': SLUG_FORMAT_REGEX,
+        'error_msg': SIMPLE_SLUG_FORMAT_ERROR_MSG,
+    }
 
     if IS_SUBDIRECTORY_SLUG_FORMAT_ENABLED.is_enabled():
         product_source = course.product_source.slug if course.product_source else None
-        slug_pattern = COURSE_URL_SLUGS_PATTERN.get(product_source, {}).get(
+        url_slugs_dict_wrt_product_source = COURSE_URL_SLUGS_PATTERN.get(product_source, {})
+        slug_pattern = url_slugs_dict_wrt_product_source.get(
             course.type.slug,
-            COURSE_URL_SLUGS_PATTERN.get(product_source, {}).get(
-                'default', (SLUG_FORMAT_REGEX, SIMPLE_SLUG_FORMAT_ERROR_MSG)
-            )
+            url_slugs_dict_wrt_product_source.get('default', DEFAULT_SLUG_PATTERN)
         )
     else:
-        slug_pattern = (SLUG_FORMAT_REGEX, SIMPLE_SLUG_FORMAT_ERROR_MSG)
+        slug_pattern = DEFAULT_SLUG_PATTERN
 
-    if not re.match(slug_pattern[0], url_slug):
-        raise ValidationError(slug_pattern[1].format(url_slug=url_slug))
+    if not re.match(slug_pattern['slug_format'], url_slug):
+        raise ValidationError(slug_pattern['error_msg'].format(url_slug=url_slug))
