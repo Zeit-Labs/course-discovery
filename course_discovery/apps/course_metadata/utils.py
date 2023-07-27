@@ -26,7 +26,7 @@ from stdimage.models import StdImageFieldFile
 from course_discovery.apps.core.models import SalesforceConfiguration
 from course_discovery.apps.core.utils import serialize_datetime
 from course_discovery.apps.course_metadata.constants import (
-    COURSE_URL_SLUGS_PATTERN, COURSE_URL_SLUGS_PATTERN_ERROR_MESSAGES, HTML_TAGS_ATTRIBUTE_WHITELIST, IMAGE_TYPES,
+    COURSE_URL_SLUGS_PATTERN, HTML_TAGS_ATTRIBUTE_WHITELIST, IMAGE_TYPES,
     SLUG_FORMAT_REGEX, SUBDIRECTORY_SLUG_FORMAT_REGEX, SIMPLE_SLUG_FORMAT_ERROR_MSG
 )
 from course_discovery.apps.course_metadata.exceptions import (
