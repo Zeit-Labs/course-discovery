@@ -22,7 +22,8 @@ from course_discovery.apps.course_metadata import utils
 from course_discovery.apps.course_metadata.choices import CourseRunStatus
 from course_discovery.apps.course_metadata.constants import (
     COURSE_URL_SLUGS_PATTERN_ERROR_MESSAGES, EXEC_ED_SLUG_FORMAT_REGEX, SLUG_FORMAT_REGEX,
-    SUBDIRECTORY_SLUG_FORMAT_REGEX
+    SUBDIRECTORY_SLUG_FORMAT_REGEX, SIMPLE_SLUG_FORMAT_ERROR_MSG, SUBDIRECTORY_SLUG_FORMAT_ERROR_MSG,
+    EXEC_ED_SLUG_FORMAT_ERROR_MSG
 )
 from course_discovery.apps.course_metadata.data_loaders.utils import map_external_org_code_to_internal_org_code
 from course_discovery.apps.course_metadata.exceptions import (
@@ -1196,13 +1197,13 @@ class ValidateSlugFormatTest(TestCase):
             assert validate_slug_format(slug, self.test_course_2) is expected_result
 
     @ddt.data(
-        ('learn/physics/applied-physics', False, COURSE_URL_SLUGS_PATTERN_ERROR_MESSAGES[SLUG_FORMAT_REGEX]),
-        ('learn/', True, COURSE_URL_SLUGS_PATTERN_ERROR_MESSAGES[SLUG_FORMAT_REGEX + '|' + SUBDIRECTORY_SLUG_FORMAT_REGEX]),
-        ('learn/', False, COURSE_URL_SLUGS_PATTERN_ERROR_MESSAGES[SLUG_FORMAT_REGEX]),
-        ('learn/123', True, COURSE_URL_SLUGS_PATTERN_ERROR_MESSAGES[SLUG_FORMAT_REGEX + '|' + SUBDIRECTORY_SLUG_FORMAT_REGEX]),
-        ('learn/123', False, COURSE_URL_SLUGS_PATTERN_ERROR_MESSAGES[SLUG_FORMAT_REGEX]),
-        ('learn/physics/applied-physics/', True, COURSE_URL_SLUGS_PATTERN_ERROR_MESSAGES[SLUG_FORMAT_REGEX + '|' + SUBDIRECTORY_SLUG_FORMAT_REGEX]),
-        ('learn$', False, COURSE_URL_SLUGS_PATTERN_ERROR_MESSAGES[SLUG_FORMAT_REGEX]),
+        ('learn/physics/applied-physics', False, SIMPLE_SLUG_FORMAT_ERROR_MSG),
+        ('learn/', True, SUBDIRECTORY_SLUG_FORMAT_ERROR_MSG),
+        ('learn/', False, SIMPLE_SLUG_FORMAT_ERROR_MSG),
+        ('learn/123', True, SUBDIRECTORY_SLUG_FORMAT_ERROR_MSG),
+        ('learn/123', False, SIMPLE_SLUG_FORMAT_ERROR_MSG),
+        ('learn/physics/applied-physics/', True, SUBDIRECTORY_SLUG_FORMAT_ERROR_MSG),
+        ('learn$', False, SIMPLE_SLUG_FORMAT_ERROR_MSG),
     )
     @ddt.unpack
     def test_validate_slug_format__raise_exception_for_ocm_course(
@@ -1257,11 +1258,11 @@ class ValidateSlugFormatTest(TestCase):
             assert validate_slug_format(slug, self.test_course_4) is None
 
     @ddt.data(
-        ('executive-education/org-name-course-name', False, COURSE_URL_SLUGS_PATTERN_ERROR_MESSAGES[SLUG_FORMAT_REGEX]),
-        ('executive-education/org-name-course-name/', True, COURSE_URL_SLUGS_PATTERN_ERROR_MESSAGES[SLUG_FORMAT_REGEX + '|' + EXEC_ED_SLUG_FORMAT_REGEX]),
-        ('executive-education/org-name-course-name/', False, COURSE_URL_SLUGS_PATTERN_ERROR_MESSAGES[SLUG_FORMAT_REGEX]),
-        ('executive-education/org-name-course-name/123', True, COURSE_URL_SLUGS_PATTERN_ERROR_MESSAGES[SLUG_FORMAT_REGEX + '|' + EXEC_ED_SLUG_FORMAT_REGEX]),
-        ('learn/test-course', True, COURSE_URL_SLUGS_PATTERN_ERROR_MESSAGES[SLUG_FORMAT_REGEX + '|' + EXEC_ED_SLUG_FORMAT_REGEX]),
+        ('executive-education/org-name-course-name', False, SIMPLE_SLUG_FORMAT_ERROR_MSG),
+        ('executive-education/org-name-course-name/', True, EXEC_ED_SLUG_FORMAT_ERROR_MSG),
+        ('executive-education/org-name-course-name/', False, SIMPLE_SLUG_FORMAT_ERROR_MSG),
+        ('executive-education/org-name-course-name/123', True, EXEC_ED_SLUG_FORMAT_ERROR_MSG),
+        ('learn/test-course', True, EXEC_ED_SLUG_FORMAT_ERROR_MSG),
     )
     @ddt.unpack
     def test_validate_slug_format__raise_exception_for_for_exec_ed_course(

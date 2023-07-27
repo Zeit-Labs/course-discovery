@@ -27,7 +27,7 @@ from course_discovery.apps.core.models import SalesforceConfiguration
 from course_discovery.apps.core.utils import serialize_datetime
 from course_discovery.apps.course_metadata.constants import (
     COURSE_URL_SLUGS_PATTERN, COURSE_URL_SLUGS_PATTERN_ERROR_MESSAGES, HTML_TAGS_ATTRIBUTE_WHITELIST, IMAGE_TYPES,
-    SLUG_FORMAT_REGEX, SUBDIRECTORY_SLUG_FORMAT_REGEX
+    SLUG_FORMAT_REGEX, SUBDIRECTORY_SLUG_FORMAT_REGEX, SIMPLE_SLUG_FORMAT_ERROR_MSG
 )
 from course_discovery.apps.course_metadata.exceptions import (
     EcommerceSiteAPIClientException, MarketingSiteAPIClientException
@@ -1057,10 +1057,12 @@ def validate_slug_format(url_slug, course):
         product_source = course.product_source.slug if course.product_source else None
         slug_pattern = COURSE_URL_SLUGS_PATTERN.get(product_source, {}).get(
             course.type.slug,
-            COURSE_URL_SLUGS_PATTERN.get(product_source, {}).get('default', SLUG_FORMAT_REGEX)
+            COURSE_URL_SLUGS_PATTERN.get(product_source, {}).get(
+                'default', (SLUG_FORMAT_REGEX, SIMPLE_SLUG_FORMAT_ERROR_MSG)
+            )
         )
     else:
-        slug_pattern = SLUG_FORMAT_REGEX
+        slug_pattern = (SLUG_FORMAT_REGEX, SIMPLE_SLUG_FORMAT_ERROR_MSG)
 
-    if not re.match(slug_pattern, url_slug):
-        raise ValidationError(COURSE_URL_SLUGS_PATTERN_ERROR_MESSAGES[slug_pattern].format(url_slug=url_slug))
+    if not re.match(slug_pattern[0], url_slug):
+        raise ValidationError(slug_pattern[1].format(url_slug=url_slug))

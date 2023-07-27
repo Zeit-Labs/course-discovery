@@ -12,6 +12,13 @@ SUBDIRECTORY_SLUG_FORMAT_REGEX = r'learn\/[a-zA-Z0-9-_]+\/[a-zA-Z0-9-_]+$'
 SLUG_FORMAT_REGEX = r'[a-zA-Z0-9-_]+$'
 EXEC_ED_SLUG_FORMAT_REGEX = r'^executive-education/[a-zA-Z0-9-_]+$'
 
+SIMPLE_SLUG_FORMAT_ERROR_MSG = 'Enter a valid “slug” consisting of letters, numbers, underscores or hyphens.'
+SUBDIRECTORY_SLUG_FORMAT_ERROR_MSG = 'Course edit was unsuccessful. The course URL slug "[{url_slug}]" ' \
+    'is an invalid format. Please ensure that the slug is in the format ' \
+    '`learn/<primary_subject>/<organization_name>-<course_title>`'
+EXEC_ED_SLUG_FORMAT_ERROR_MSG = 'Course edit was unsuccessful. The course URL slug "[{url_slug}]" ' \
+    'is an invalid format. Please ensure that the slug is in the format `executive-education/<course_title>`'
+
 MASTERS_PROGRAM_TYPE_SLUG = 'masters'
 
 IMAGE_TYPES = {
@@ -35,9 +42,19 @@ GOOGLE_CLIENT_API_SCOPE = ['https://www.googleapis.com/auth/drive.readonly']
 
 COURSE_URL_SLUGS_PATTERN = {
     settings.DEFAULT_PRODUCT_SOURCE_SLUG:
-        {'default': f'{SLUG_FORMAT_REGEX}|{SUBDIRECTORY_SLUG_FORMAT_REGEX}'},
+        {'default': (
+            f'{SLUG_FORMAT_REGEX}|{SUBDIRECTORY_SLUG_FORMAT_REGEX}',
+            SUBDIRECTORY_SLUG_FORMAT_ERROR_MSG
+        )},
     settings.EXTERNAL_PRODUCT_SOURCE_SLUG:
-        {'default': SLUG_FORMAT_REGEX, 'executive-education-2u': f'{SLUG_FORMAT_REGEX}|{EXEC_ED_SLUG_FORMAT_REGEX}'},
+        {'default': (
+            SLUG_FORMAT_REGEX,
+            SIMPLE_SLUG_FORMAT_ERROR_MSG
+        ),
+        'executive-education-2u': (
+            f'{SLUG_FORMAT_REGEX}|{EXEC_ED_SLUG_FORMAT_REGEX}',
+            EXEC_ED_SLUG_FORMAT_ERROR_MSG
+        )}
 }
 
 COURSE_URL_SLUGS_PATTERN_ERROR_MESSAGES = {
@@ -46,7 +63,7 @@ COURSE_URL_SLUGS_PATTERN_ERROR_MESSAGES = {
         'Course edit was unsuccessful. The course URL slug "[{url_slug}]" is an invalid format. ' \
         'Please ensure that the slug is in the format `learn/<primary_subject>/<organization_name>-<course_title>`',
     f'{SLUG_FORMAT_REGEX}|{EXEC_ED_SLUG_FORMAT_REGEX}':
-        'Course edit was unsuccessful. The course URL slug "[{url_slug}]"' \
+        'Course edit was unsuccessful. The course URL slug "[{url_slug}]" ' \
         'is an invalid format. Please ensure that the slug is in the format `executive-education/<course_title>`',
 }
 

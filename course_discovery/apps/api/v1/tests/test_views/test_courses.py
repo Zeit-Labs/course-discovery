@@ -54,7 +54,7 @@ class CourseViewSetTests(SerializationMixin, ElasticsearchTestMixin, OAuth2Mixin
         self.audit_type = CourseType.objects.get(slug=CourseType.AUDIT)
         self.verified_type = CourseType.objects.get(slug=CourseType.VERIFIED_AUDIT)
         self.product_source = SourceFactory(name='test source')
-        self.product_source_2 = SourceFactory(slug=settings.DEFAULT_EXTERNAL_PRODUCT_SOURCE_SLUG)
+        self.product_source_2 = SourceFactory(slug=settings.EXTERNAL_PRODUCT_SOURCE_SLUG)
         self.course = CourseFactory(
             partner=self.partner, title='Fake Test', key='edX+Fake101', type=self.audit_type, geolocation=None
         )
@@ -1116,7 +1116,7 @@ class CourseViewSetTests(SerializationMixin, ElasticsearchTestMixin, OAuth2Mixin
     def test_update_success_with_subdirectory_slug_format_for_exec_ed_course(self, method):
         url = reverse('api:v1:course-detail', kwargs={'key': self.course.uuid})
 
-        external_product_source = Source.objects.get(slug=settings.DEFAULT_EXTERNAL_PRODUCT_SOURCE_SLUG)
+        external_product_source = Source.objects.get(slug=settings.EXTERNAL_PRODUCT_SOURCE_SLUG)
         course_type = CourseTypeFactory(slug=CourseType.EXECUTIVE_EDUCATION_2U)
         self.course.product_source = external_product_source
         self.course.type = course_type
