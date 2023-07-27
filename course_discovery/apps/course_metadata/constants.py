@@ -57,16 +57,6 @@ COURSE_URL_SLUGS_PATTERN = {
         )}
 }
 
-COURSE_URL_SLUGS_PATTERN_ERROR_MESSAGES = {
-    SLUG_FORMAT_REGEX : 'Enter a valid “slug” consisting of letters, numbers, underscores or hyphens.',
-    f'{SLUG_FORMAT_REGEX}|{SUBDIRECTORY_SLUG_FORMAT_REGEX}':
-        'Course edit was unsuccessful. The course URL slug "[{url_slug}]" is an invalid format. ' \
-        'Please ensure that the slug is in the format `learn/<primary_subject>/<organization_name>-<course_title>`',
-    f'{SLUG_FORMAT_REGEX}|{EXEC_ED_SLUG_FORMAT_REGEX}':
-        'Course edit was unsuccessful. The course URL slug "[{url_slug}]" ' \
-        'is an invalid format. Please ensure that the slug is in the format `executive-education/<course_title>`',
-}
-
 
 class PathwayType(Enum):
     """ Allowed values for Pathway.pathway_type """
